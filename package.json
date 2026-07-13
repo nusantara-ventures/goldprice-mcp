@@ -1,6 +1,6 @@
 {
   "name": "@goldprice/mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Stdio bridge for the goldprice.dev Model Context Protocol server. Drops Claude Desktop, Cursor, or any MCP client into live gold prices in 30 seconds.",
   "repository": {
     "type": "git",
@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "prepublishOnly": "npm run build"
   },
   "engines": {
