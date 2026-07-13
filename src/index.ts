@@ -33,9 +33,10 @@ import {
   McpError,
   ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { PACKAGE_NAME, PACKAGE_VERSION } from "./package-info.js";
+import { createRequestOptions } from "./request-options.js";
+import { createUpstreamForwarder } from "./upstream-forwarder.js";
 
-const PKG_NAME = "@goldprice/mcp";
-const PKG_VERSION = "0.1.0";
 const DEFAULT_BASE_URL = "https://api.goldprice.dev";
 
 type Stderr = (message: string) => void;
@@ -43,7 +44,7 @@ type Stderr = (message: string) => void;
 const log: Stderr = (message) => {
   // Trailing newline for line-buffered stderr consumers (Claude Desktop
   // surfaces MCP server stderr in its logs).
-  process.stderr.write(`[${PKG_NAME}] ${message}\n`);
+  process.stderr.write(`[${PACKAGE_NAME}] ${message}\n`);
 };
 
 function resolveEndpoint(base: string): URL {
@@ -113,24 +114,26 @@ async function main(): Promise<void> {
     process.exit(1);
     return;
   }
+  const requestOptions = createRequestOptions(timeoutMs);
 
   // 1. Connect to upstream HTTP MCP.
   const upstream = new Client(
-    { name: `${PKG_NAME}-bridge`, version: PKG_VERSION },
+    { name: `${PACKAGE_NAME}-bridge`, version: PACKAGE_VERSION },
     { capabilities: {} },
   );
+  const upstreamForwarder = createUpstreamForwarder(upstream, requestOptions);
 
   const upstreamTransport = new StreamableHTTPClientTransport(endpoint, {
     requestInit: {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "User-Agent": `${PKG_NAME}/${PKG_VERSION} (stdio-bridge)`,
+        "User-Agent": `${PACKAGE_NAME}/${PACKAGE_VERSION} (stdio-bridge)`,
       },
     },
   });
 
   try {
-    await upstream.connect(upstreamTransport);
+    await upstreamForwarder.connect(upstreamTransport);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     log(`Failed to connect to ${endpoint.href}: ${message}`);
@@ -156,7 +159,7 @@ async function main(): Promise<void> {
   if (serverCapabilities.completions) bridgeCapabilities.completions = {};
 
   const bridge = new Server(
-    { name: "goldprice", version: PKG_VERSION },
+    { name: "goldprice", version: PACKAGE_VERSION },
     { capabilities: bridgeCapabilities },
   );
 
@@ -166,43 +169,45 @@ async function main(): Promise<void> {
   //    honest.
   if (serverCapabilities.tools) {
     bridge.setRequestHandler(ListToolsRequestSchema, async () =>
-      forward("tools/list", () => upstream.listTools()),
+      forward("tools/list", upstreamForwarder.listTools),
     );
     bridge.setRequestHandler(CallToolRequestSchema, async (request) =>
       forward(`tools/call(${request.params.name})`, () =>
-        upstream.callTool(request.params),
+        upstreamForwarder.callTool(request.params),
       ),
     );
   }
 
   if (serverCapabilities.resources) {
     bridge.setRequestHandler(ListResourcesRequestSchema, async () =>
-      forward("resources/list", () => upstream.listResources()),
+      forward("resources/list", upstreamForwarder.listResources),
     );
     bridge.setRequestHandler(ListResourceTemplatesRequestSchema, async () =>
-      forward("resources/templates/list", () => upstream.listResourceTemplates()),
+      forward("resources/templates/list", upstreamForwarder.listResourceTemplates),
     );
     bridge.setRequestHandler(ReadResourceRequestSchema, async (request) =>
       forward(`resources/read(${request.params.uri})`, () =>
-        upstream.readResource(request.params),
+        upstreamForwarder.readResource(request.params),
       ),
     );
   }
 
   if (serverCapabilities.prompts) {
     bridge.setRequestHandler(ListPromptsRequestSchema, async () =>
-      forward("prompts/list", () => upstream.listPrompts()),
+      forward("prompts/list", upstreamForwarder.listPrompts),
     );
     bridge.setRequestHandler(GetPromptRequestSchema, async (request) =>
       forward(`prompts/get(${request.params.name})`, () =>
-        upstream.getPrompt(request.params),
+        upstreamForwarder.getPrompt(request.params),
       ),
     );
   }
 
   if (serverCapabilities.completions) {
     bridge.setRequestHandler(CompleteRequestSchema, async (request) =>
-      forward("completion/complete", () => upstream.complete(request.params)),
+      forward("completion/complete", () =>
+        upstreamForwarder.complete(request.params),
+      ),
     );
   }
 
