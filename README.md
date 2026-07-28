@@ -1,4 +1,6 @@
-# @goldprice/mcp
+# @nusantara-ventures/goldprice-mcp
+
+> **Renamed.** This package was previously published as `@goldprice/mcp`. That name is deprecated and will not receive updates — install `@nusantara-ventures/goldprice-mcp` instead. No API changes came with the move.
 
 Stdio bridge that wires [goldprice.dev](https://goldprice.dev)'s hosted
 Model Context Protocol server into any MCP client — Claude Desktop,
@@ -26,7 +28,7 @@ Edit your config file:
   "mcpServers": {
     "goldprice": {
       "command": "npx",
-      "args": ["-y", "@goldprice/mcp"],
+      "args": ["-y", "@nusantara-ventures/goldprice-mcp"],
       "env": {
         "GP_KEY": "ga_live_..."
       }
@@ -47,7 +49,7 @@ The MCP icon should show `goldprice` with the tools your tier unlocks.
   "mcpServers": {
     "goldprice": {
       "command": "npx",
-      "args": ["-y", "@goldprice/mcp"],
+      "args": ["-y", "@nusantara-ventures/goldprice-mcp"],
       "env": { "GP_KEY": "ga_live_..." }
     }
   }
@@ -61,7 +63,7 @@ Cmd/Ctrl-Shift-P → "Restart MCP servers".
 Point it at the stdio server directly:
 
 ```sh
-npx -y @goldprice/mcp
+npx -y @nusantara-ventures/goldprice-mcp
 ```
 
 ---

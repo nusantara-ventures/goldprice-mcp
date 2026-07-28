@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// @goldprice/mcp — stdio ↔ HTTP Streamable bridge for the goldprice.dev
+// @nusantara-ventures/goldprice-mcp — stdio ↔ HTTP Streamable bridge for the goldprice.dev
 // Model Context Protocol server. Thin proxy: the bridge holds no tool
 // definitions, no schemas, no business logic. It opens a stdio MCP server
 // for the local client (Claude Desktop / Cursor / etc.) and forwards every
@@ -33,7 +33,7 @@ import {
   McpError,
   ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { PACKAGE_NAME, PACKAGE_VERSION } from "./package-info.js";
+import { CLIENT_ID, PACKAGE_NAME, PACKAGE_VERSION } from "./package-info.js";
 import { createRequestOptions } from "./request-options.js";
 import { createUpstreamForwarder } from "./upstream-forwarder.js";
 
@@ -118,7 +118,7 @@ async function main(): Promise<void> {
 
   // 1. Connect to upstream HTTP MCP.
   const upstream = new Client(
-    { name: `${PACKAGE_NAME}-bridge`, version: PACKAGE_VERSION },
+    { name: `${CLIENT_ID}-bridge`, version: PACKAGE_VERSION },
     { capabilities: {} },
   );
   const upstreamForwarder = createUpstreamForwarder(upstream, requestOptions);
@@ -127,7 +127,7 @@ async function main(): Promise<void> {
     requestInit: {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "User-Agent": `${PACKAGE_NAME}/${PACKAGE_VERSION} (stdio-bridge)`,
+        "User-Agent": `${CLIENT_ID}/${PACKAGE_VERSION} (stdio-bridge)`,
       },
     },
   });
