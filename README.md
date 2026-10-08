@@ -1,7 +1,5 @@
 # @nusantara-ventures/goldprice-mcp
 
-> **Renamed.** This package was previously published as `@goldprice/mcp`. That name is deprecated and will not receive updates — install `@nusantara-ventures/goldprice-mcp` instead. No API changes came with the move.
-
 Stdio bridge that wires [goldprice.dev](https://goldprice.dev)'s hosted
 Model Context Protocol server into any MCP client — Claude Desktop,
 Cursor, or whatever stdio-speaking agent you're using.
@@ -128,4 +126,4 @@ GP_KEY=ga_live_... node dist/index.js
 
 ## License
 
-MIT — see [LICENSE](./LICENSE). Copyright © 2026 Nusantara Ventures LLC.
+MIT — see [LICENSE](./LICENSE). Copyright © 2026 Nusantara Ventures, LLC.

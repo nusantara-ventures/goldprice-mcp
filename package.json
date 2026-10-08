@@ -1,6 +1,6 @@
 {
   "name": "@nusantara-ventures/goldprice-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Stdio bridge for the goldprice.dev Model Context Protocol server. Drops Claude Desktop, Cursor, or any MCP client into live gold prices in 30 seconds.",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.32.1"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -47,5 +47,5 @@
   ],
   "homepage": "https://goldprice.dev/docs/mcp",
   "license": "MIT",
-  "author": "Nusantara Ventures LLC <hello@goldprice.dev>"
+  "author": "Nusantara Ventures, LLC <hello@goldprice.dev>"
 }
